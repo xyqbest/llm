@@ -113,10 +113,10 @@ if __name__ == "__main__":
     # ==========================3. 基于小模型和输入数据，构造input模板==========================
     # 加载QWEN 110B开源大模型
     device = "cuda"  # the device to load the model onto
-    tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen1.5-110B-Chat-GPTQ-Int4", cache_dir='/data2/xyq/hf_model', )
+    tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen1.5-110B-Chat-GPTQ-Int4", cache_dir='/data2/xxx/hf_model', )
     model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen1.5-110B-Chat-GPTQ-Int4", torch_dtype="auto",
                                                  device_map="auto",
-                                                 cache_dir='/data2/xyq/hf_model', resume_download=True)
+                                                 cache_dir='/data2/xxx/hf_model', resume_download=True)
 
     # prompt结构Input + Predicted Label + Confidence + Ground Truth
     # 构造Constructed Context，基于3条训练数据
@@ -234,7 +234,7 @@ if __name__ == "__main__":
     # print(res_clf)
     # print("=" * 60)
     #
-    # # ==========================Appendix. 其它==========================
+    # # ==========================Appendix. 其它==========================x
     # parser = argparse.ArgumentParser()
     # parser.add_argument("--model_path", type=str, required=True, help="Path to model")
     # parser.add_argument(
