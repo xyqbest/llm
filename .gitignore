@@ -1,0 +1,122 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+.idea/
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+# 通常用于打包Python应用
+# Byte-compiled files
+__pycache__/
+# PyInstaller configuration
+*.spec
+# Compiled Python files
+*.pyc
+# PyInstaller bundles *
+bundled/*
+# PyInstaller caches
+.cache/
+# PyInstaller logs
+logs/
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook files
+.ipynb_checkpoints/
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Rope project settings
+.ropeproject/
+
+# mkdocs documentation
+/site
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# C extensions
+*.o
+*.c
+*.cpp
+*.cc
+*.h
+*.hpp
+*.hxx
+*.hh
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope package manager metadata
+.rope/
+
+# Microsoft Visual Studio Code
+.vscode/
+
+# Package metadata and virtual environment marker
+Pipfile
+Pipfile.lock
+Procfile
+.env
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Docker
+Dockerfile
+docker-compose.yml
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Setuptools development mode
+setup.py
