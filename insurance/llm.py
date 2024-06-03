@@ -140,8 +140,10 @@ if __name__ == "__main__":
             Constructed_Context += f"\n【小模型预测标签】：{xgb_pred[index_train]}\n" \
                                    f"【置信度】：{xgb_pred_proba[index_train]}\n" \
                                    f"【真实值】：{record_train['fraud_reported_01']}\n\n"
-        # Constructed_Context += f"根据上述示例，请你预测一下记录的真实值，你预测的真实值写在'【真实值】：'后。请严格遵守输出格式要求。\n"
-        Constructed_Context += f"根据上述示例，结合你的计算，请你预测以下记录的真实值。你的回答以'【真实值】：'开头，然后给出你的预测值。请严格遵守输出格式要求。\n"
+        # Constructed_Context += f"请你预测一下记录的真实值，你预测的真实值写在'【真实值】：'后。请严格遵守输出格式要求。\n"
+        # Constructed_Context += f"根据上述示例，结合你的计算，请你预测以下记录的真实值。你的回答以'【真实值】：'开头，然后给出你的预测值。请严格遵守输出格式要求。\n"
+        Constructed_Context += f"根据上述示例，请你参考【小模型预测标签】和【置信度】，主要以【特征变量】为判决依据，" \
+                               f"给出你对真实值的预测。请你的回答以'【真实值】：'开头，然后给出你的预测值。请严格遵守输出格式要求。\n"
         # 加入测试集数据
         record_test = pd.DataFrame([record_test.values], columns=record_test.index)
         for col in record_test.columns:
