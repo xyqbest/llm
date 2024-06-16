@@ -1,0 +1,80 @@
+# Replace it with the actual image version.
+# FROM ubuntu:18.04
+# FROM nvidia/cuda:12.1.0-devel-ubuntu22.04
+# FROM m.daocloud.io/docker.io/nvidia/cuda:12.1.0-devel-ubuntu22.04
+
+FROM hub.uuuadc.top/nvidia/cuda:12.1.0-devel-ubuntu20.04
+
+
+# Set the user ma-user whose UID is 1000 and the user group ma-group whose GID is 100
+USER root
+SHELL ["/bin/bash", "-c"]
+# 设置环境变量避免交互提示
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN default_user=$(getent passwd 1000 | awk -F ':' '{print $1}') || echo "uid: 1000 does not exist" && \
+    default_group=$(getent group 100 | awk -F ':' '{print $1}') || echo "gid: 100 does not exist" && \
+    if [ ! -z ${default_user} ] && [ ${default_user} != "ma-user" ]; then \
+        userdel -r ${default_user}; \
+    fi && \
+    if [ ! -z ${default_group} ] && [ ${default_group} != "ma-group" ]; then \
+        groupdel -f ${default_group}; \
+    fi && \
+    groupadd -g 100 ma-group && useradd -d /home/ma-user -m -u 1000 -g 100 -s /bin/bash ma-user && \
+# Grant the read, write, and execute permissions on the target directory to the user ma-user.
+chmod -R 750 /home/ma-user
+
+#Configure the APT source and install the ZIP and Wget tools (required for installing conda).
+# RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak && \
+#    echo "deb http://repo.huaweicloud.com/ubuntu/ bionic main restricted\ndeb http://repo.huaweicloud.com/ubuntu/ bionic-updates main restricted\ndeb http://repo.huaweicloud.com/ubuntu/ bionic universe\ndeb http://repo.huaweicloud.com/ubuntu/ bionic-updates universe\ndeb http://repo.huaweicloud.com/ubuntu/ bionic multiverse\ndeb http://repo.huaweicloud.com/ubuntu/ bionic-updates multiverse\ndeb http://repo.huaweicloud.com/ubuntu/ bionic-backports main restricted universe multiverse\ndeb http://repo.huaweicloud.com/ubuntu bionic-security main restricted\ndeb http://repo.huaweicloud.com/ubuntu bionic-security universe\ndeb http://repo.huaweicloud.com/ubuntu bionic-security multivers e" > /etc/apt/sources.list && \
+RUN apt-get update && \
+    apt-get install -y zip wget
+
+#Modifying the system Configuration of the image (required for creating the Conda environment)
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
+#Switch to user ma-user , download miniconda from the Tsinghua repository, and install miniconda in /home/ma-user.
+USER ma-user
+RUN cd /home/ma-user/ && \
+    wget --no-check-certificate https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-4.6.14-Linux-x86_64.sh && \
+    bash Miniconda3-4.6.14-Linux-x86_64.sh -b -p /home/ma-user/anaconda3 && \
+    rm -rf Miniconda3-4.6.14-Linux-x86_64.sh
+
+#Configure the conda and pip sources
+RUN mkdir -p /home/ma-user/.pip && \
+    echo -e "channels:\n  - defaults\nshow_channel_urls: true\ndefault_channels:\n  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main\n  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r\n  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2" > /home/ma-user/.condarc && \
+    echo -e "[global]\nindex-url = https://pypi.tuna.tsinghua.edu.cn/simple\n[install]\ntrusted-host = https://pypi.tuna.tsinghua.edu.cn" > /home/ma-user/.pip/pip.conf
+
+#Create the conda environment and install the Python third-party package. The ipykernel package is mandatory for starting a kernel.
+RUN source /home/ma-user/anaconda3/bin/activate && \
+    conda create -y --name pytorch_230_cuda121_py39 python=3.10 && \
+    conda activate pytorch_230_cuda121_py39 && \
+    conda init bash 
+#     pip install torch==1.8.1 torchvision==0.9.1 && \
+#     pip install ipykernel==6.7.0 && \
+
+ENV PATH=/home/ma-user/anaconda3/bin:$PATH
+
+RUN conda install -n pytorch_230_cuda121_py39 pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia && \
+    conda install -n pytorch_230_cuda121_py39 ipykernel
+# RUN conda deactivate 
+
+
+# 预先配置时区
+USER root
+RUN apt-get update && \
+    apt-get install -y tzdata && \
+    ln -fs /usr/share/zoneinfo/Etc/UTC /etc/localtime && \
+    dpkg-reconfigure --frontend noninteractive tzdata
+    
+#Install FFmpeg and GCC
+USER root
+RUN apt-get -y install ffmpeg && \
+    apt -y install gcc-8 g++-8
+
+# Install starship
+RUN curl -sS https://starship.rs/install.sh | sh
+RUN echo 'eval "$(starship init bash)"' >> ~/.bashrc
+
+RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak && \
+    echo "deb http://repo.huaweicloud.com/ubuntu/ bionic main restricted\ndeb http://repo.huaweicloud.com/ubuntu/ bionic-updates main restricted\ndeb http://repo.huaweicloud.com/ubuntu/ bionic universe\ndeb http://repo.huaweicloud.com/ubuntu/ bionic-updates universe\ndeb http://repo.huaweicloud.com/ubuntu/ bionic multiverse\ndeb http://repo.huaweicloud.com/ubuntu/ bionic-updates multiverse\ndeb http://repo.huaweicloud.com/ubuntu/ bionic-backports main restricted universe multiverse\ndeb http://repo.huaweicloud.com/ubuntu bionic-security main restricted\ndeb http://repo.huaweicloud.com/ubuntu bionic-security universe\ndeb http://repo.huaweicloud.com/ubuntu bionic-security multivers e" > /etc/apt/sources.list 
